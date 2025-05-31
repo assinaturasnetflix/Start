@@ -1,0 +1,60 @@
+/* input.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-eden-white text-eden-green-darker antialiased; /* Usando eden-green-darker para melhor contraste */
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Estilização para scrollbar personalizada (opcional, mas melhora a estética) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px; /* Um pouco mais visível */
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-eden-green-extralight/50; /* Fundo da trilha sutil */
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-eden-green-light;
+  border-radius: 10px;
+  /* border: 2px solid theme('colors.eden-green.extralight'); */ /* Borda opcional ao redor do thumb */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  @apply bg-eden-green; /* Cor mais escura no hover */
+}
+
+/* Para Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: theme('colors.eden-green.light') theme('colors.eden-green.extralight/50');
+}
+
+/* Pequenos helpers que podem ser úteis (opcional) */
+.debug-outline {
+  @apply outline outline-1 outline-red-500;
+}
+
+/* Placeholder para animações de texto, caso precise */
+.animate-text-gradient {
+  background-image: linear-gradient(to right, theme('colors.eden-green.light'), theme('colors.eden-green.DEFAULT'), theme('colors.eden-green.dark'));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: textGradientAnimation 5s linear infinite;
+}
+
+@keyframes textGradientAnimation {
+  to {
+    background-position: 200% center;
+  }
+}

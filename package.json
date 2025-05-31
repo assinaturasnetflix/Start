@@ -1,0 +1,14 @@
+{
+  "name": "eden-labs-site",
+  "version": "1.0.0",
+  "description": "Site institucional para Eden Labs com design verde e branco.",
+  "scripts": {
+    "build:css": "tailwindcss -i ./input.css -o ./style.css --minify",
+    "watch:css": "tailwindcss -i ./input.css -o ./style.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.1"
+  },
+  "author": "Eden Labs",
+  "license": "ISC"
+}

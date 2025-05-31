@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eden Labs - Transforme seu negócio digital</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .float {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .btn-glow {
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-glow:hover {
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .nav-blur {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .hero-pattern {
+            background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.3) 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+        
+        .section-divider {
+            background: linear-gradient(90deg, transparent, #667eea, transparent);
+            height: 1px;
+            margin: 4rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        const LoadingScreen = ({ onLoadComplete }) => {
+            useEffect(() => {
+                const timer = setTimeout(() => {
+                    onLoadComplete();
+                }, 3000);
+                return () => clearTimeout(timer);
+            }, []);
+
+            return React.createElement('div', {
+                className: 'loading-screen'
+            }, [
+                React.createElement('img', {
+                    key: 'logo',
+                    src: 'logo.jpg',
+                    alt: 'Eden Labs',
+                    className: 'w-24 h-24 rounded-full pulse mb-4',
+                    onError: (e) => {
+                        e.target.style.display = 'none';
+                        e.target.nextSibling.style.display = 'block';
+                    }
+                }),
+                React.createElement('div', {
+                    key: 'fallback',
+                    className: 'w-24 h-24 bg-white rounded-full flex items-center justify-center pulse mb-4',
+                    style: { display: 'none' }
+                }, React.createElement('span', {
+                    className: 'text-purple-600 font-bold text-xl'
+                }, 'EL')),
+                React.createElement('h2', {
+                    key: 'title',
+                    className: 'text-white text-2xl font-bold'
+                }, 'Eden Labs'),
+                React.createElement('div', {
+                    key: 'spinner',
+                    className: 'mt-4'
+                }, React.createElement('div', {
+                    className: 'animate-spin rounded-full h-8 w-8 border-b-2 border-white'
+                }))
+            ]);
+        };
+
+        const Header = () => {
+            const [isScrolled, setIsScrolled] = useState(false);
+
+            useEffect(() => {
+                const handleScroll = () => {
+                    setIsScrolled(window.scrollY > 50);
+                };
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            return React.createElement('header', {
+                className: `fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'nav-blur shadow-lg' : 'bg-transparent'}`
+            }, React.createElement('div', {
+                className: 'container mx-auto px-4 py-4 flex justify-between items-center'
+            }, [
+                React.createElement('div', {
+                    key: 'logo',
+                    className: 'flex items-center space-x-3'
+                }, [
+                    React.createElement('img', {
+                        key: 'logo-img',
+                        src: 'logo.jpg',
+                        alt: 'Eden Labs',
+                        className: 'w-10 h-10 rounded-full',
+                        onError: (e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'flex';
+                        }
+                    }),
+                    React.createElement('div', {
+                        key: 'logo-fallback',
+                        className: 'w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center',
+                        style: { display: 'none' }
+                    }, React.createElement('span', {
+                        className: 'text-white font-bold text-sm'
+                    }, 'EL')),
+                    React.createElement('span', {
+                        key: 'logo-text',
+                        className: `font-bold text-xl ${isScrolled ? 'text-gray-800' : 'text-white'}`
+                    }, 'Eden Labs')
+                ]),
+                React.createElement('nav', {
+                    key: 'nav',
+                    className: 'hidden md:flex space-x-8'
+                }, [
+                    React.createElement('a', {
+                        key: 'home',
+                        href: '#home',
+                        className: `hover:text-purple-600 transition-colors ${isScrolled ? 'text-gray-700' : 'text-white'}`
+                    }, 'Home'),
+                    React.createElement('a', {
+                        key: 'services',
+                        href: '#servicos',
+                        className: `hover:text-purple-600 transition-colors ${isScrolled ? 'text-gray-700' : 'text-white'}`
+                    }, 'Serviços'),
+                    React.createElement('a', {
+                        key: 'portfolio',
+                        href: '#portfolio',
+                        className: `hover:text-purple-600 transition-colors ${isScrolled ? 'text-gray-700' : 'text-white'}`
+                    }, 'Portfólio'),
+                    React.createElement('a', {
+                        key: 'blog',
+                        href: '#blog',
+                        className: `hover:text-purple-600 transition-colors ${isScrolled ? 'text-gray-700' : 'text-white'}`
+                    }, 'Blog'),
+                    React.createElement('a', {
+                        key: 'contact',
+                        href: '#contato',
+                        className: `hover:text-purple-600 transition-colors ${isScrolled ? 'text-gray-700' : 'text-white'}`
+                    }, 'Contato')
+                ])
+            ]));
+        };
+
+        const HeroSection = () => {
+            const scrollToPackages = () => {
+                document.getElementById('servicos').scrollIntoView({ behavior: 'smooth' });
+            };
+
+            return React.createElement('section', {
+                id: 'home',
+                className: 'min-h-screen gradient-bg hero-pattern flex items-center justify-center relative overflow-hidden'
+            }, [
+                React.createElement('div', {
+                    key: 'content',
+                    className: 'container mx-auto px-4 text-center z-10'
+                }, [
+                    React.createElement('div', {
+                        key: 'hero-img',
+                        className: 'mb-8 float'
+                    }, React.createElement('img', {
+                        src: '/assets/hero-banner.png',
+                        alt: 'Hero Banner',
+                        className: 'mx-auto max-w-md w-full',
+                        onError: (e) => {
+                            e.target.style.display = 'none';
+                            e.target.parentElement.innerHTML = '<div class="w-64 h-32 bg-white/20 rounded-lg mx-auto flex items-center justify-center"><i class="fas fa-rocket text-4xl text-white"></i></div>';
+                        }
+                    })),
+                    React.createElement('h1', {
+                        key: 'title',
+                        className: 'text-5xl md:text-7xl font-bold text-white mb-6 fade-in'
+                    }, 'Transforme seu negócio'),
+                    React.createElement('p', {
+                        key: 'subtitle',
+                        className: 'text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto fade-in'
+                    }, 'Entre no mundo digital com soluções inovadoras. A Eden Labs leva sua empresa ao próximo nível.'),
+                    React.createElement('button', {
+                        key: 'cta',
+                        onClick: scrollToPackages,
+                        className: 'bg-white text-purple-600 px-8 py-4 rounded-full text-lg font-semibold btn-glow hover:bg-gray-100 transition-all duration-300'
+                    }, 'Descobrir Soluções')
+                ]),
+                React.createElement('div', {
+                    key: 'bg-elements',
+                    className: 'absolute inset-0 overflow-hidden pointer-events-none'
+                }, [
+                    React.createElement('div', {
+                        key: 'circle1',
+                        className: 'absolute top-20 left-20 w-32 h-32 bg-white/10 rounded-full blur-xl animate-pulse'
+                    }),
+                    React.createElement('div', {
+                        key: 'circle2',
+                        className: 'absolute bottom-20 right-20 w-48 h-48 bg-white/5 rounded-full blur-2xl animate-pulse'
+                    })
+                ])
+            ]);
+        };
+
+        const SolutionSection = () => {
+            return React.createElement('section', {
+                className: 'py-20 bg-gray-50'
+            }, React.createElement('div', {
+                className: 'container mx-auto px-4'
+            }, [
+                React.createElement('div', {
+                    key: 'header',
+                    className: 'text-center mb-16',
+                    'data-aos': 'fade-up'
+                }, [
+                    React.createElement('h2', {
+                        key: 'title',
+                        className: 'text-4xl md:text-5xl font-bold gradient-text mb-6'
+                    }, 'Soluções Inteligentes'),
+                    React.createElement('p', {
+                        key: 'subtitle',
+                        className: 'text-xl text-gray-600 max-w-3xl mx-auto'
+                    }, 'Transformamos ideias em realidade digital com tecnologia de ponta')
+                ]),
+                React.createElement('div', {
+                    key: 'features',
+                    className: 'grid md:grid-cols-3 gap-8'
+                }, [
+                    React.createElement('div', {
+                        key: 'feature1',
+                        className: 'text-center p-8 bg-white rounded-2xl shadow-lg card-hover',
+                        'data-aos': 'fade-up',
+                        'data-aos-delay': '100'
+                    }, [
+                        React.createElement('div', {
+                            key: 'icon',
+                            className: 'w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-6'
+                        }, React.createElement('i', {
+                            className: 'fas fa-cog text-white text-2xl'
+                        })),
+                        React.createElement('h3', {
+                            key: 'title',
+                            className: 'text-2xl font-bold text-gray-800 mb-4'
+                        }, 'Automatize processos com inteligência'),
+                        React.createElement('p', {
+                            key: 'desc',
+                            className: 'text-gray-600'
+                        }, 'Otimize seu fluxo de trabalho com automação inteligente e eficiente')
+                    ]),
+                    React.createElement('div', {
+                        key: 'feature2',
+                        className: 'text-center p-8 bg-white rounded-2xl shadow-lg card-hover',
+                        'data-aos': 'fade-up',
+                        'data-aos-delay': '200'
+                    }, [
+                        React.createElement('div', {
+                            key: 'icon',
+                            className: 'w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-6'
+                        }, React.createElement('i', {
+                            className: 'fas fa-shield-alt text-white text-2xl'
+                        })),
+                        React.createElement('h3', {
+                            key: 'title',
+                            className: 'text-2xl font-bold text-gray-800 mb-4'
+                        }, 'Soluções seguras, escaláveis e de alto desempenho'),
+                        React.createElement('p', {
+                            key: 'desc',
+                            className: 'text-gray-600'
+                        }, 'Tecnologia robusta que cresce junto com seu negócio')
+                    ]),
+                    React.createElement('div', {
+                        key: 'feature3',
+                        className: 'text-center p-8 bg-white rounded-2xl shadow-lg card-hover',
+                        'data-aos': 'fade-up',
+                        'data-aos-delay': '300'
+                    }, [
+                        React.createElement('div', {
+                            key: 'icon',
+                            className: 'w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-6'
+                        }, React.createElement('i', {
+                            className: 'fas fa-rocket text-white text-2xl'
+                        })),
+                        React.createElement('h3', {
+                            key: 'title',
+                            className: 'text-2xl font-bold text-gray-800 mb-4'
+                        }, 'Do conceito à execução — com você em cada etapa'),
+                        React.createElement('p', {
+                            key: 'desc',
+                            className: 'text-gray-600'
+                        }, 'Acompanhamento completo desde a ideia até o lançamento')
+                    ])
+                ])
+            ]));
+        };
+
+        const PackagesSection = () => {
+            const packages = [
+                {
+                    name: 'Soluções de Software',
+                    price: 'A partir de 15.000Mt',
+                    features: [
+                        'Suporte grátis por 6 meses',
+                        'Integração com redes sociais',
+                        'Site de apresentação com blog',
+                        'Painel de administração',
+                        'Sistema de backup automático'
+                    ],
+                    icon: 'fas fa-code',
+                    color: 'from-blue-500 to-purple-600'
+                },
+                {
+                    name: 'E-commerce Completo',
+                    price: 'A partir de 12.000Mt',
+                    features: [
+                        'Design moderno e responsivo',
+                        'Integração com pagamentos',
+                        'Produtos ilimitados',
+                        'Dashboard avançado',
+                        'Suporte técnico 24/7'
+                    ],
+                    icon: 'fas fa-shopping-cart',
+                    color: 'from-green-500 to-blue-500'
+                },
+                {
+                    name: 'Sites Corporativos',
+                    price: 'A partir de 8.000Mt',
+                    features: [
+                        'Presença institucional',
+                        'Formulários personalizados',
+                        'SEO otimizado',
+                        'Galeria de imagens',
+                        'Páginas dinâmicas'
+                    ],
+                    icon: 'fas fa-building',
+                    color: 'from-purple-500 to-pink-500'
+                }
+            ];
+
+            return React.createElement('section', {
+                id: 'servicos',
+                className: 'py-20 bg-white'
+            }, React.createElement('div', {
+                className: 'container mx-auto px-4'
+            }, [
+                React.createElement('div', {
+                    key: 'header',
+                    className: 'text-center mb-16',
+                    'data-aos': 'fade-up'
+                }, [
+                    React.createElement('h2', {
+                        key: 'title',
+                        className: 'text-4xl md:text-5xl font-bold gradient-text mb-6'
+                    }, 'Nossos Pacotes'),
+                    React.createElement('p', {
+                        key: 'subtitle',
+                        className: 'text-xl text-gray-600'
+                    }, 'Escolha a solução ideal para seu negócio')
+                ]),
+                React.createElement('div', {
+                    key: 'packages',
+                    className: 'grid md:grid-cols-3 gap-8'
+                }, packages.map((pkg, index) => 
+                    React.createElement('div', {
+                        key: pkg.name,
+                        className: 'bg-white rounded-2xl shadow-xl p-8 card-hover border border-gray-100',
+                        'data-aos': 'fade-up',
+                        'data-aos-delay': `${(index + 1) * 100}`
+                    }, [
+                        React.createElement('div', {
+                            key: 'icon',
+                            className: `w-16 h-16 bg-gradient-to-r ${pkg.color} rounded-2xl flex items-center justify-center mx-auto mb-6`
+                        }, React.createElement('i', {
+                            className: `${pkg.icon} text-white text-2xl`
+                        })),
+                        React.createElement('h3', {
+                            key: 'name',
+                            className: 'text-2xl font-bold text-gray-800 mb-4 text-center'
+                        }, pkg.name),
+                        React.createElement('div', {
+                            key: 'price',
+                            className: 'text-center mb-6'
+                        }, React.createElement('span', {
+                            className: 'text-3xl font-bold gradient-text'
+                        }, pkg.price)),
+                        React.createElement('ul', {
+                            key: 'features',
+                            className: 'space-y-3 mb-8'
+                        }, pkg.features.map((feature, idx) =>
+                            React.createElement('li', {
+                                key: idx,
+                                className: 'flex items-center text-gray-600'
+                            }, [
+                                React.createElement('i', {
+                                    key: 'check',
+                                    className: 'fas fa-check text-green-500 mr-3'
+                                }),
+                                React.createElement('span', {
+                                    key: 'text'
+                                }, feature)
+                            ])
+                        )),
+                        React.createElement('a', {
+                            key: 'button',
+                            href: `https://wa.me/258865097696?text=Olá%2C%20gostaria%20de%20contratar%20o%20pacote%20de%20${encodeURIComponent(pkg.name)}`,
+                            target: '_blank',
+                            className: `block w-full bg-gradient-to-r ${pkg.color} text-white text-center py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300`
+                        }, 'Contratar via WhatsApp')
+                    ])
+                ))
+            ]));
+        };
+
+        const BlogSection = () => {
+            const articles = [
+                {
+                    title: 'Por que digitalizar sua empresa em 2025?',
+                    excerpt: 'Descubra as principais tendências e benefícios da transformação digital para empresas modernas.',
+                    date: '15 Mai 2025',
+                    image: '/assets/blog1.jpg'
+                },
+                {
+                    title: '5 ferramentas que usamos na Eden Labs',
+                    excerpt: 'Conheça as tecnologias e ferramentas que utilizamos para criar soluções inovadoras.',
+                    date: '12 Mai 2025',
+                    image: '/assets/blog2.jpg'
+                },
+                {
+                    title: 'O futuro do e-commerce em Moçambique',
+                    excerpt: 'Análise das oportunidades e desafios do comércio eletrônico no mercado moçambicano.',
+                    date: '08 Mai 2025',
+                    image: '/assets/blog3.jpg'
+                }
+            ];
+
+            return React.createElement('section', {
+                id: 'blog',
+                className: 'py-20 bg-gray-50'
+            }, React.createElement('div', {
+                className: 'container mx-auto px-4'
+            }, [
+                React.createElement('div', {
+                    key: 'header',
+                    className: 'text-center mb-16',
+                    'data-aos': 'fade-up'
+                }, [
+                    React.createElement('h2', {
+                        key: 'title',
+                        className: 'text-4xl md:text-5xl font-bold gradient-text mb-6'
+                    }, 'Blog & Insights'),
+                    React.createElement('p', {
+                        key: 'subtitle',
+                        className: 'text-xl text-gray-600'
+                    }, 'Compartilhamos conhecimento e tendências do mundo digital')
+                ]),
+                React.createElement('div', {
+                    key: 'articles',
+                    className: 'grid md:grid-cols-3 gap-8'
+                }, articles.map((article, index) =>
+                    React.createElement('article', {
+                        key: index,
+                        className: 'bg-white rounded-2xl shadow-lg overflow-hidden card-hover',
+                        'data-aos': 'fade-up',
+                        'data-aos-delay': `${(index + 1) * 100}`
+                    }, [
+                        React.createElement('div', {
+                            key: 'image',
+                            className: 'h-48 bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center'
+                        }, React.createElement('i', {
+                            className: 'fas fa-newspaper text-white text-4xl'
+                        })),
+                        React.createElement('div', {
+                            key: 'content',
+                            className: 'p-6'
+                        }, [
+                            React.createElement('div', {
+                                key: 'date',
+                                className: 'text-sm text-purple-600 font-semibold mb-2'
+                            }, article.date),
+                            React.createElement('h3', {
+                                key: 'title',
+                                className: 'text-xl font-bold text-gray-800 mb-3'
+                            }, article.title),
+                            React.createElement('p', {
+                                key: 'excerpt',
+                                className: 'text-gray-600 mb-4'
+                            }, article.excerpt),
+                            React.createElement('button', {
+                                key: 'read-more',
+                                className: 'text-purple-600 font-semibold hover:text-purple-700 transition-colors'
+                            }, 'Ler mais →')
+                        ])
+                    ])
+                ))
+            ]));
+        };
+
+        const PortfolioSection = () => {
+            const projects = [
+                {
+                    name: 'Sistema de Gestão Empresarial',
+                    category: 'Software',
+                    image: '/assets/portfolio1.jpg'
+                },
+                {
+                    name: 'Loja Online de Moda',
+                    category: 'E-commerce',
+                    image: '/assets/portfolio2.jpg'
+                },
+                {
+                    name: 'Site Corporativo Tech',
+                    category: 'Website',
+                    image: '/assets/portfolio3.jpg'
+                },
+                {
+                    name: 'App de Delivery',
+                    category: 'Aplicativo',
+                    image: '/assets/portfolio4.jpg'
+                }
+            ];
+
+            return React.createElement('section', {
+                id: 'portfolio',
+                className: 'py-20 bg-white'
+            }, React.createElement('div', {
+                className: 'container mx-auto px-4'
+            }, [
+                React.createElement('div', {
+                    key: 'header',
+                    className: 'text-center mb-16',
+                    'data-aos': 'fade-up'
+                }, [
+                    React.createElement('h2', {
+                        key: 'title',
+                        className: 'text-4xl md:text-5xl font-bold gradient-text mb-6'
+                    }, 'Nosso Portfólio'),
+                    React.createElement('p', {
+                        key: 'subtitle',
+                        className: 'text-xl text-gray-600 mb-4'
+                    }, 'Projetos que transformaram negócios'),
+                    React.createElement('p', {
+                        key: 'note',
+                        className: 'text-sm text-gray-500 italic'
+                    }, 'Simulações visuais para referência de estilo')
+                ]),
+                React.createElement('div', {
+                    key: 'projects',
+                    className: 'grid md:grid-cols-2 lg:grid-cols-4 gap-6'
+                }, projects.map((project, index) =>
+                    React.createElement('div', {
+                        key: index,
+                        className: 'group relative overflow-hidden rounded-2xl shadow-lg card-hover',
+                        'data-aos': 'fade-up',
+                        'data-aos-delay': `${(index + 1) * 100}`
+                    }, [
+                        React.createElement('div', {
+                            key: 'image',
+                            className: 'h-64 bg-gradient-to-br from-purple-400 to-blue-600 flex items-center justify-center'
+                        }, React.createElement('i', {
+                            className: 'fas fa-image text-white text-4xl'
+                        })),
+                        React.createElement('div', {
+                            key: 'overlay',
+                            className: 'absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end'
+                        }, React.createElement('div', {
+                            className: 'p-6 text-white'
+                        }, [
+                            React.createElement('h3', {
+                                key: 'name',
+                                className: 'font-bold text-lg mb-2'
+                            }, project.name),
+                            React.createElement('span', {
+                                key: 'category',
+                                className: 'text-sm bg-white/20 px-3 py-1 rounded-full'
+                            }, project.category)
+                        ]))
+                    ])
+                ))
+            ]));
+        };
+
+        const ContactSection = () => {
+            return React.createElement('section', {
+                id: 'contato',
+                className: 'py-20 gradient-bg'
+            }, React.createElement('div', {
+                className: 'container mx-auto px-4'
+            }, [
+                React.createElement('div', {
+                    key: 'header',
+                    className: 'text-center mb-16',
+                    'data-aos': 'fade-up'
+                }, [
+                    React.createElement('h2', {
+                        key: 'title',
+                        className: 'text-4xl md:text-5xl font-bold text-white mb-6'
+                    }, 'Vamos Conversar'),
+                    React.createElement('p', {
+                        key: 'subtitle',
+                        className: 'text-xl text-white/90'
+                    }, 'Transforme sua ideia em realidade digital')
+                ]),
+                React.createElement('div', {
+                    key: 'contact-info',
+                    className: 'grid md:grid-cols-2 gap-12 items-center'
+                }, [
+                    React.createElement('div', {
+                        key: 'info',
+                        className: 'text-white',
+                        'data-aos': 'fade-right'
+                    }, [
+                        React.createElement('h3', {
+                            key: 'title',
+                            className: 'text-2xl font-bold mb-8'
+                        }, 'Entre em Contato'),
+                        React.createElement('div', {
+                            key: 'phone',
+                            className: 'flex items-center mb-6'
+                        }, [
+                            React.createElement('div', {
+                                key: 'icon',
+                                className: 'w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mr-4'
+                            }, React.createElement('i', {
+                                className: 'fas fa-phone text-white'
+                            })),
+                            React.createElement('span', {
+                                key: 'text',
+                                className: 'text-lg'
+                            }, '+258 865 097 696')
+                        ]),
+                        React.createElement('div', {
+                            key: 'whatsapp',
+                            className: 'flex items-center mb-8'
+                        }, [
+                            React.createElement('div', {
+                                key: 'icon',
+                                className: 'w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mr-4'
+                            }, React.createElement('i', {
+                                className: 'fab fa-whatsapp text-white'
+                            })),
+                            React.createElement('span', {
+                                key: 'text',
+                                className: 'text-lg'
+                            }, 'WhatsApp: 865 097 696')
+                        ]),
+                        React.createElement('div', {
+                            key: 'buttons',
+                            className: 'space-y-4'
+                        }, [
+                            React.createElement('a', {
+                                key: 'whatsapp-btn',
+                                href: 'https://wa.me/258865097696?text=Olá%2C%20estou%20interessado%20em%20criar%20um%20site%20com%20a%20Eden%20Labs.',
+                                target: '_blank',
+                                className: 'flex items-center justify-center bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 btn-glow'
+                            }, [
+                                React.createElement('i', {
+                                    key: 'icon',
+                                    className: 'fab fa-whatsapp mr-3 text-xl'
+                                }),
+                                React.createElement('span', {
+                                    key: 'text'
+                                }, 'Conversar no WhatsApp')
+                            ]),
+                            React.createElement('a', {
+                                key: 'call-btn',
+                                href: 'tel:+258865097696',
+                                className: 'flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 btn-glow'
+                            }, [
+                                React.createElement('i', {
+                                    key: 'icon',
+                                    className: 'fas fa-phone mr-3'
+                                }),
+                                React.createElement('span', {
+                                    key: 'text'
+                                }, 'Ligar Agora')
+                            ])
+                        ])
+                    ]),
+                    React.createElement('div', {
+                        key: 'form',
+                        className: 'bg-white/10 backdrop-blur-lg rounded-2xl p-8',
+                        'data-aos': 'fade-left'
+                    }, [
+                        React.createElement('h3', {
+                            key: 'title',
+                            className: 'text-2xl font-bold text-white mb-6'
+                        }, 'Envie sua Mensagem'),
+                        React.createElement('form', {
+                            key: 'contact-form',
+                            className: 'space-y-4'
+                        }, [
+                            React.createElement('input', {
+                                key: 'name',
+                                type: 'text',
+                                placeholder: 'Seu Nome',
+                                className: 'w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-white/70 border border-white/30 focus:border-white focus:outline-none'
+                            }),
+                            React.createElement('input', {
+                                key: 'email',
+                                type: 'email',
+                                placeholder: 'Seu Email',
+                                className: 'w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-white/70 border border-white/30 focus:border-white focus:outline-none'
+                            }),
+                            React.createElement('textarea', {
+                                key: 'message',
+                                placeholder: 'Sua Mensagem',
+                                rows: 4,
+                                className: 'w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-white/70 border border-white/30 focus:border-white focus:outline-none resize-none'
+                            }),
+                            React.createElement('button', {
+                                key: 'submit',
+                                type: 'submit',
+                                className: 'w-full bg-white text-purple-600 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors'
+                            }, 'Enviar Mensagem')
+                        ])
+                    ])
+                ])
+            ]));
+        };
+
+        const Footer = () => {
+            return React.createElement('footer', {
+                className: 'bg-gray-900 text-white py-12'
+            }, React.createElement('div', {
+                className: 'container mx-auto px-4'
+            }, [
+                React.createElement('div', {
+                    key: 'content',
+                    className: 'grid md:grid-cols-4 gap-8 mb-8'
+                }, [
+                    React.createElement('div', {
+                        key: 'brand',
+                        className: 'col-span-2'
+                    }, [
+                        React.createElement('div', {
+                            key: 'logo',
+                            className: 'flex items-center space-x-3 mb-4'
+                        }, [
+                            React.createElement('img', {
+                                key: 'logo-img',
+                                src: 'logo.jpg',
+                                alt: 'Eden Labs',
+                                className: 'w-10 h-10 rounded-full',
+                                onError: (e) => {
+                                    e.target.style.display = 'none';
+                                    e.target.nextSibling.style.display = 'flex';
+                                }
+                            }),
+                            React.createElement('div', {
+                                key: 'logo-fallback',
+                                className: 'w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center',
+                                style: { display: 'none' }
+                            }, React.createElement('span', {
+                                className: 'text-white font-bold text-sm'
+                            }, 'EL')),
+                            React.createElement('span', {
+                                key: 'name',
+                                className: 'text-2xl font-bold'
+                            }, 'Eden Labs')
+                        ]),
+                        React.createElement('p', {
+                            key: 'description',
+                            className: 'text-gray-300 mb-4'
+                        }, 'Transformamos ideias em soluções digitais inovadoras. Sua jornada digital começa aqui.'),
+                        React.createElement('div', {
+                            key: 'social',
+                            className: 'flex space-x-4'
+                        }, [
+                            React.createElement('a', {
+                                key: 'whatsapp',
+                                href: 'https://wa.me/258865097696',
+                                target: '_blank',
+                                className: 'w-10 h-10 bg-green-500 rounded-full flex items-center justify-center hover:bg-green-600 transition-colors'
+                            }, React.createElement('i', {
+                                className: 'fab fa-whatsapp'
+                            })),
+                            React.createElement('a', {
+                                key: 'facebook',
+                                href: '#',
+                                className: 'w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors'
+                            }, React.createElement('i', {
+                                className: 'fab fa-facebook'
+                            })),
+                            React.createElement('a', {
+                                key: 'linkedin',
+                                href: '#',
+                                className: 'w-10 h-10 bg-blue-700 rounded-full flex items-center justify-center hover:bg-blue-800 transition-colors'
+                            }, React.createElement('i', {
+                                className: 'fab fa-linkedin'
+                            }))
+                        ])
+                    ]),
+                    React.createElement('div', {
+                        key: 'links',
+                        className: 'space-y-3'
+                    }, [
+                        React.createElement('h4', {
+                            key: 'title',
+                            className: 'text-lg font-semibold mb-4'
+                        }, 'Links Úteis'),
+                        React.createElement('a', {
+                            key: 'home',
+                            href: '#home',
+                            className: 'block text-gray-300 hover:text-white transition-colors'
+                        }, 'Home'),
+                        React.createElement('a', {
+                            key: 'services',
+                            href: '#servicos',
+                            className: 'block text-gray-300 hover:text-white transition-colors'
+                        }, 'Serviços'),
+                        React.createElement('a', {
+                            key: 'blog',
+                            href: '#blog',
+                            className: 'block text-gray-300 hover:text-white transition-colors'
+                        }, 'Blog'),
+                        React.createElement('a', {
+                            key: 'contact',
+                            href: '#contato',
+                            className: 'block text-gray-300 hover:text-white transition-colors'
+                        }, 'Contato')
+                    ]),
+                    React.createElement('div', {
+                        key: 'contact-info',
+                        className: 'space-y-3'
+                    }, [
+                        React.createElement('h4', {
+                            key: 'title',
+                            className: 'text-lg font-semibold mb-4'
+                        }, 'Contato'),
+                        React.createElement('p', {
+                            key: 'phone',
+                            className: 'text-gray-300 flex items-center'
+                        }, [
+                            React.createElement('i', {
+                                key: 'icon',
+                                className: 'fas fa-phone mr-2'
+                            }),
+                            React.createElement('span', {
+                                key: 'text'
+                            }, '+258 865 097 696')
+                        ]),
+                        React.createElement('p', {
+                            key: 'whatsapp',
+                            className: 'text-gray-300 flex items-center'
+                        }, [
+                            React.createElement('i', {
+                                key: 'icon',
+                                className: 'fab fa-whatsapp mr-2'
+                            }),
+                            React.createElement('span', {
+                                key: 'text'
+                            }, '865 097 696')
+                        ])
+                    ])
+                ]),
+                React.createElement('div', {
+                    key: 'divider',
+                    className: 'border-t border-gray-700 pt-8'
+                }, React.createElement('div', {
+                    className: 'text-center text-gray-400'
+                }, [
+                    React.createElement('p', {
+                        key: 'copyright'
+                    }, `© ${new Date().getFullYear()} Eden Labs. Todos os direitos reservados.`)
+                ]))
+            ]));
+        };
+
+        const App = () => {
+            const [loading, setLoading] = useState(true);
+
+            useEffect(() => {
+                AOS.init({
+                    duration: 1000,
+                    once: true,
+                    offset: 100
+                });
+
+                gsap.registerPlugin();
+            }, []);
+
+            const handleLoadComplete = () => {
+                setLoading(false);
+            };
+
+            if (loading) {
+                return React.createElement(LoadingScreen, { onLoadComplete: handleLoadComplete });
+            }
+
+            return React.createElement('div', {
+                className: 'min-h-screen'
+            }, [
+                React.createElement(Header, { key: 'header' }),
+                React.createElement(HeroSection, { key: 'hero' }),
+                React.createElement(SolutionSection, { key: 'solutions' }),
+                React.createElement(PackagesSection, { key: 'packages' }),
+                React.createElement(PortfolioSection, { key: 'portfolio' }),
+                React.createElement(BlogSection, { key: 'blog' }),
+                React.createElement(ContactSection, { key: 'contact' }),
+                React.createElement(Footer, { key: 'footer' })
+            ]);
+        };
+
+        ReactDOM.render(React.createElement(App), document.getElementById('root'));
+    </script>
+</body>
+</html>

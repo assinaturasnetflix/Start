@@ -4,24 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eden Labs - Soluções Digitais Inovadoras</title>
-    <link href="style.css" rel="stylesheet">
-    <!-- AOS será substituído/complementado por Framer Motion, mas pode ser mantido para animações simples de scroll se desejado -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-
-    <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
-    
-    <!-- Framer Motion UMD -->
-    <script src="https://unpkg.com/framer-motion@4.1.17/dist/framer-motion.umd.js"></script> 
-    <!-- Usei uma versão específica (4.1.17) para estabilidade, pode usar @latest se preferir -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <!-- O logo.jpg será usado como favicon, você pode querer um .ico específico -->
+    <link rel="icon" href="/assets/logo.jpg" type="image/jpeg">
 </head>
-<body class="bg-eden-white text-eden-green-darker antialiased"> {/* Adicionado antialiased para suavização de fontes */}
+<body>
     <div id="root"></div>
-
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="main.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- react-icons: vamos tentar importar dinamicamente ou usar SVGs se o CDN for um problema para build -->
+    <!-- Para build, estas dependências virão do package.json e bundler -->
+    <script src="app.js" defer></script>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
 </body>
 </html>

@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', sans-serif; /* Fonte padrão moderna */
+  background-color: #FFFFFF; /* Branco como base */
+  color: #3A5A40; /* Verde escuro para texto padrão */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar (opcional, mas pode adicionar ao design verde/branco) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F4F4F4; /* eden-off-white */
+}
+::-webkit-scrollbar-thumb {
+  background: #5C946E; /* eden-green-DEFAULT */
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3A5A40; /* eden-green-dark */
+}
+
+/* Para animações de carregamento ou outros elementos fixos */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.95); /* Branco com leve transparência */
+  z-index: 9999;
+}
+
+.loading-image {
+  width: 100px; /* Ajuste conforme o tamanho do seu logo.gif ou logo.jpg */
+  height: 100px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.7;
+  }
+}
